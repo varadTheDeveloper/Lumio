@@ -1,0 +1,27 @@
+---
+import { site } from '../config/site';
+---
+
+<span class="logo">
+  <span class="logo__mark" aria-hidden="true"></span>
+  <span class="logo__word">{site.name.toLowerCase()}</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.04em;
+  }
+  .logo__mark {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px rgba(198, 255, 61, 0.7);
+  }
+</style>

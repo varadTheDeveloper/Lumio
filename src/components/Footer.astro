@@ -1,0 +1,85 @@
+---
+import Logo from './Logo.astro';
+import { nav, site } from '../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__grid">
+    <div class="site-footer__brand">
+      <Logo />
+      <p>{site.tagline}. Based in {site.location}, working with clients everywhere.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+    <div class="site-footer__meta">
+      <span>Studio time</span>
+      <span data-clock>IST</span>
+    </div>
+  </div>
+  <div class="wrap site-footer__base">
+    <span>© {year} {site.name}</span>
+    <a href="#main" data-to-top>Back to top ↑</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    padding-block: 4rem;
+  }
+  .site-footer__brand {
+    display: grid;
+    gap: 1rem;
+    color: var(--text);
+  }
+  .site-footer__brand p {
+    max-width: 32ch;
+    color: var(--muted);
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+  }
+  a:hover {
+    color: var(--text);
+  }
+  .site-footer__meta {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+  }
+  .site-footer__meta span:last-child {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .site-footer__base {
+    display: flex;
+    justify-content: space-between;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
+  }
+  @media (max-width: 700px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
