@@ -1,0 +1,175 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name}: ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0b0b0f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Not public yet: remove before launch. -->
+    <meta name="robots" content="noindex" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="loader" data-loader aria-hidden="true">
+      <span class="loader__brand">{site.name}</span>
+      <span class="loader__count" data-loader-count>000</span>
+    </div>
+
+    <canvas class="scene" data-scene-canvas aria-hidden="true"></canvas>
+    <div class="scene-fallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" data-cursor aria-hidden="true"></div>
+
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .scene {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100lvh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+  /* Shown when there is no WebGL or no JavaScript: a soft glow in the same place. */
+  .scene-fallback {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(40vmax 40vmax at 72% 45%, rgba(198, 255, 61, 0.16), transparent 60%),
+      radial-gradient(30vmax 30vmax at 65% 55%, rgba(124, 92, 255, 0.12), transparent 60%);
+  }
+  .has-webgl .scene-fallback {
+    display: none;
+  }
+  main,
+  .site-footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Fine film grain over everything, for a printed, premium texture. */
+  .grain {
+    position: fixed;
+    inset: -50%;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 1s steps(4) infinite;
+  }
+  @keyframes grain {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-3%, 2%); }
+    50% { transform: translate(2%, -3%); }
+    75% { transform: translate(-2%, -2%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  .loader {
+    display: none;
+  }
+  .js .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: var(--gutter);
+    background: var(--bg);
+    font-family: var(--font-display);
+  }
+  .loader__brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .loader__count {
+    font-size: clamp(4rem, 18vw, 14rem);
+    line-height: 0.8;
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cursor {
+    display: none;
+  }
+  .has-cursor .cursor {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 90;
+    width: 12px;
+    height: 12px;
+    margin: -6px 0 0 -6px;
+    border-radius: 50%;
+    background: var(--accent);
+    pointer-events: none;
+    mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 0.3s, width 0.35s var(--ease), height 0.35s var(--ease), margin 0.35s var(--ease);
+  }
+  .has-cursor .cursor.is-visible {
+    opacity: 1;
+  }
+  .has-cursor .cursor.is-active {
+    width: 56px;
+    height: 56px;
+    margin: -28px 0 0 -28px;
+  }
+  .cursor[data-label]:not([data-label=''])::after {
+    content: attr(data-label);
+    font: 600 0.7rem/1 var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+  .has-cursor .cursor[data-label]:not([data-label='']) {
+    width: 88px;
+    height: 88px;
+    margin: -44px 0 0 -44px;
+    mix-blend-mode: normal;
+  }
+</style>
